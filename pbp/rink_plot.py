@@ -98,10 +98,10 @@ def rink(setting = "full", vertical = False):
         y_lines1 = np.concatenate(([15], 72 + 28*np.sin(theta_lines), 72 + 28*np.sin(np.flip(theta_lines))))
         x_lines2 = np.concatenate(([-42.5], -42.5 + 28 - 28*np.cos(theta_lines), 42.5 - 28 + 28*np.cos(np.flip(theta_lines))))
         y_lines2 = np.concatenate(([15], -72 - 28*np.sin(theta_lines), -72 - 28*np.sin(np.flip(theta_lines))))
-        fig.add_trace(go.Scatter(x=x_lines1, y=y_lines1, mode='lines', line=dict(color='black', width=2), showlegend=False, hoverinfo='skip'))
-        fig.add_trace(go.Scatter(x=x_lines2, y=y_lines2, mode='lines', line=dict(color='black', width=2), showlegend=False, hoverinfo='skip'))
-        fig.add_shape(type='line', xref='x', yref='y', x0=42.5, y0=-72.5, x1=42.5, y1=72.5, line=dict(color='black', width=2))
-        fig.add_shape(type='line', xref='x', yref='y', x0=-42.5, y0=-72.5, x1=-42.5, y1=72.5, line=dict(color='black', width=2))
+        fig.add_trace(go.Scatter(x=x_lines1, y=y_lines1, mode='lines', line=dict(color='white', width=2), showlegend=False, hoverinfo='skip'))
+        fig.add_trace(go.Scatter(x=x_lines2, y=y_lines2, mode='lines', line=dict(color='white', width=2), showlegend=False, hoverinfo='skip'))
+        fig.add_shape(type='line', xref='x', yref='y', x0=42.5, y0=-72.5, x1=42.5, y1=72.5, line=dict(color='white', width=2))
+        fig.add_shape(type='line', xref='x', yref='y', x0=-42.5, y0=-72.5, x1=-42.5, y1=72.5, line=dict(color='white', width=2))
         
         # Add goals
         goal_width = 6     # feet
@@ -189,10 +189,10 @@ def rink(setting = "full", vertical = False):
         y_lines1 = np.concatenate(([-42.5], -42.5 + 28 - 28 * np.cos(theta_lines), 42.5 - 28 + 28 * np.cos(np.flip(theta_lines))))
         x_lines2 = np.concatenate(([15], -72 - 28 * np.sin(theta_lines), -72 - 28 * np.sin(np.flip(theta_lines))))
         y_lines2 = np.concatenate(([-42.5], -42.5 + 28 - 28 * np.cos(theta_lines), 42.5 - 28 + 28 * np.cos(np.flip(theta_lines))))
-        fig.add_trace(go.Scatter(x=x_lines1, y=y_lines1, mode='lines', line=dict(color='black', width=2), showlegend=False, hoverinfo='skip'))
-        fig.add_trace(go.Scatter(x=x_lines2, y=y_lines2, mode='lines', line=dict(color='black', width=2), showlegend=False, hoverinfo='skip'))
-        fig.add_shape(type='line', xref='x', yref='y', x0=-72.5, y0=-42.5, x1=72.5, y1=-42.5, line=dict(color='black', width=2))
-        fig.add_shape(type='line', xref='x', yref='y', x0=-72.5, y0=42.5, x1=72.5, y1=42.5, line=dict(color='black', width=2))
+        fig.add_trace(go.Scatter(x=x_lines1, y=y_lines1, mode='lines', line=dict(color='white', width=2), showlegend=False, hoverinfo='skip'))
+        fig.add_trace(go.Scatter(x=x_lines2, y=y_lines2, mode='lines', line=dict(color='white', width=2), showlegend=False, hoverinfo='skip'))
+        fig.add_shape(type='line', xref='x', yref='y', x0=-72.5, y0=-42.5, x1=72.5, y1=-42.5, line=dict(color='white', width=2))
+        fig.add_shape(type='line', xref='x', yref='y', x0=-72.5, y0=42.5, x1=72.5, y1=42.5, line=dict(color='white', width=2))
 
         # Add goals
         goal_width = 6     # feet
@@ -239,7 +239,7 @@ def rink(setting = "full", vertical = False):
     
     #Set background to transparent
     fig.update_layout(
-        paper_bgcolor="rgba(255,255,255,255)", 
-        plot_bgcolor="rgba(255,255,255,255)"
+        paper_bgcolor="rgba(0,0,0,0)", 
+        plot_bgcolor="rgba(0,0,0,0)"
     )
     return fig

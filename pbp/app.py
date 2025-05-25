@@ -1,6 +1,5 @@
 import pandas as pd
 import plotly.express as px
-import var
 import plot as wsba_plt
 import numpy as np
 from urllib.parse import *
@@ -8,7 +7,10 @@ from shiny import *
 from shinywidgets import output_widget, render_widget 
 
 app_ui = ui.page_fluid(
-    ui.input_dark_mode(mode='dark'),
+    ui.tags.style(
+    "body {background:#000000"
+    "}"
+    ),
     output_widget("plot_game"),
 )
 
@@ -24,9 +26,9 @@ def server(input, output, session):
         #If no input data is provided automatically provide a select game and plot all 5v5 fenwick shots
         if 'event_type' not in query.keys() or 'strength_state' not in query.keys():
             if 'game_id' not in query.keys():
-                query = {'game_id':['2024021000'],'event_type':var.fenwick_events,'strength_state':['5v5']}
+                query = {'game_id':['2024021000'],'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5']}
             else:
-                query.update({'event_type':var.fenwick_events,'strength_state':['5v5']})
+                query.update({'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5']})
 
         #Iterate through query and parse params with multiple selections
         for param in query.keys():
@@ -72,13 +74,17 @@ def server(input, output, session):
                 title=dict(text=game_title,
                            x=0.5, y=0.94,
                            xanchor='center',
-                           yanchor='top'),
+                           yanchor='top',
+                           font=dict(color='white')
+                           ),
+                           
                 legend=dict(
                     orientation='h',
                     x=0.49,
                     y=-0.04,
                     xanchor='center',
                     yanchor='bottom',
+                    font=dict(color='white')
                 )
             )
 
