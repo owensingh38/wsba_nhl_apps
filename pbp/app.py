@@ -8,7 +8,7 @@ from shinywidgets import output_widget, render_widget
 
 app_ui = ui.page_fluid(
     ui.tags.style(
-    "body {background:#000000"
+    "body {background:#09090b"
     "}"
     ),
     output_widget("plot_game"),
