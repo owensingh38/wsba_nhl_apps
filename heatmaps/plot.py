@@ -38,9 +38,7 @@ def heatmap(df,skater,team,events,strengths,onice):
     df['onice_against'] = np.where(df['away_team_abbr']==df['event_team_abbr'],df['home_on_ice'],df['away_on_ice'])
 
     df['strength_state'] = np.where(df['strength_state'].isin(['5v5','5v4','4v5']),df['strength_state'],'Other')
-    
-    df[['event_type','strength_state']].to_csv('whynot.csv')
-    
+        
     if strengths != 'all':
         df = df.loc[((df['strength_state'].isin(strengths)))]
 
@@ -61,10 +59,13 @@ def heatmap(df,skater,team,events,strengths,onice):
     difference = (gaussian_filter(xgoals_player,sigma = 3)) - xgoals_smooth
 
     fig = go.Figure(
-        data = go.Contour(x=np.linspace(x_min,x_max,(x_max-x_min)),
+        data = go.Heatmap(x=np.linspace(x_min,x_max,(x_max-x_min)),
                             y=np.linspace(-42.5,42.5,85),
                             z=difference,
-                            colorscale=[[0.0,'red'],[0.5,'white'],[1.0,'blue']])
+                            colorscale=[[0.0,'red'],[0.5,'white'],[1.0,'blue']],
+                            connectgaps=True,
+                            zsmooth='best',
+                            showscale=False)
     )
 
     return fig

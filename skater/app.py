@@ -26,9 +26,9 @@ def server(input, output, session):
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
         if 'event_type' not in query.keys() or 'strength_state' not in query.keys():
             if 'skater' not in query.keys():
-                query = {'skater':['8473419'],'season':['20182019'],'team':['BOS'],'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5']}
+                query = {'skater':['8473419'],'season':['20182019'],'team':['BOS'],'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5'],'season_type':['2']}
             else:
-                query.update({'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5']})
+                query.update({'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5'],'season_type':['2']})
 
         #Iterate through query and parse params with multiple selections
         for param in query.keys():
@@ -42,7 +42,7 @@ def server(input, output, session):
         df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
     
         #Prepare dataframe for plotting based on URL parameters
-        df = df.loc[(df['event_player_1_id'].astype(str).str.replace('.0','').isin(query['skater']))&(df['season'].astype(str).isin(query['season']))&(df['event_team_abbr'].astype(str).isin(query['team']))].replace({np.nan: None})
+        df = df.loc[(df['event_player_1_id'].astype(str).str.replace('.0','').isin(query['skater']))&(df['season'].astype(str).isin(query['season']))&(df['event_team_abbr'].astype(str).isin(query['team']))&(df['season_type'].astype(str).isin(query['season_type']))].replace({np.nan: None})
         df = wsba_plt.prep(df,events=query['event_type'],strengths=query['strength_state'])
 
         #Return empty rink if no data exists else continue
