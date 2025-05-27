@@ -67,7 +67,36 @@ def server(input, output, session):
 
             for trace in plot.data:
                 rink.add_trace(trace)
+            
+            player = df['event_player_1_name'].to_list()[0]
+            season = int(season[0:4])
+            team = df['event_team_abbr'].to_list()[0]
+            strengths = 'All Situations' if len(query['strength_state']) == 4 else query['strength_state']
+            
+            rink.add_annotation(
+                text=f'{season}-{season+1}, {'Regular Season' if query['season_type'][0]=='2' else 'Playoffs'}, {team}',
+                xref="paper",
+                yref="paper",
+                xanchor='center',
+                yanchor='top',
+                font=dict(color='white'),
+                x=0.5,
+                y=0,
+                showarrow=False
+            )
 
-            return rink
+            return rink.update_layout( 
+                title=dict(
+                    text=f'{player} Fenwick Shots at {strengths}',
+                    x=0.5, y=0.96,
+                    xanchor='center',
+                    yanchor='top',
+                    font=dict(color='white')
+                ),
+
+                hoverlabel=dict(
+                    font_size=10
+                )
+            )
 
 app = App(app_ui, server)

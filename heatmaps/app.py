@@ -59,7 +59,44 @@ def server(input, output, session):
                 for trace in against_plot.data:
                     rink.add_trace(trace)
 
-                return rink
+                try:
+                    player = df.loc[df['event_player_1_id'].astype(str).str.replace('.0','')==query['skater'][0],'event_player_1_name'].to_list()[0]
+                except:
+                    player = query['skater'][0]
+                season = int(season[0:4])
+                team = query['team'][0]
+                strengths = 'All Situations' if len(query['strength_state']) == 4 else query['strength_state']
+
+                return rink.update_layout( 
+
+                    title=dict(
+                        text=f'{player} On-Ice xG at {strengths}; {season}-{season+1}, {'Regular Season' if query['season_type'][0]=='2' else 'Playoffs'}, {team}',
+                        x=0.5, y=0.96,
+                        xanchor='center',
+                        yanchor='top',
+                        font=dict(color='white')
+                    ),
+                ).add_annotation(
+                    text='Lower xG',
+                    xref="paper",
+                    yref="paper",
+                    xanchor='right',
+                    yanchor='top',
+                    font=dict(color='white'),
+                    x=0.3,
+                    y=0.04,
+                    showarrow=False
+                ).add_annotation(
+                    text='Higher xG',
+                    xref="paper",
+                    yref="paper",
+                    xanchor='right',
+                    yanchor='top',
+                    font=dict(color='white'),
+                    x=0.76,
+                    y=0.04,
+                    showarrow=False
+                )
             except:
                 return wsba_plt.wsba_rink()
 

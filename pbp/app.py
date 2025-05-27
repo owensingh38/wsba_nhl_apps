@@ -8,8 +8,7 @@ from shinywidgets import output_widget, render_widget
 
 app_ui = ui.page_fluid(
     ui.tags.style(
-    "body {background:#09090b"
-    "}"
+        "body {background:#09090b}"
     ),
     output_widget("plot_game"),
 )
@@ -71,12 +70,13 @@ def server(input, output, session):
                 rink.add_trace(trace)
 
             return rink.update_layout(
-                title=dict(text=game_title,
-                           x=0.5, y=0.94,
-                           xanchor='center',
-                           yanchor='top',
-                           font=dict(color='white')
-                           ),
+                title=dict(
+                    text=game_title,
+                    x=0.5, y=0.94,
+                    xanchor='center',
+                    yanchor='top',
+                    font=dict(color='white')
+                ),
                            
                 legend=dict(
                     orientation='h',
@@ -85,6 +85,10 @@ def server(input, output, session):
                     xanchor='center',
                     yanchor='bottom',
                     font=dict(color='white')
+                ),
+
+                hoverlabel=dict(
+                    font_size=10
                 )
             )
 

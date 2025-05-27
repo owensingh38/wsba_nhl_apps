@@ -30,7 +30,6 @@ def heatmap(df,skater,team,events,strengths,onice):
         x_min = -100
         x_max = 0
 
-    df = df.loc[(abs(df['event_distance'].fillna(0))<=89)&(abs(df['x'])<=89)&(df['empty_net']==0)]
     df['home_on_ice'] = df['home_on_1_id'].astype(str) + ";" + df['home_on_2_id'].astype(str) + ";" + df['home_on_3_id'].astype(str) + ";" + df['home_on_4_id'].astype(str) + ";" + df['home_on_5_id'].astype(str) + ";" + df['home_on_6_id'].astype(str)
     df['away_on_ice'] = df['away_on_1_id'].astype(str) + ";" + df['away_on_2_id'].astype(str) + ";" + df['away_on_3_id'].astype(str) + ";" + df['away_on_4_id'].astype(str) + ";" + df['away_on_5_id'].astype(str) + ";" + df['away_on_6_id'].astype(str)
 
@@ -51,21 +50,28 @@ def heatmap(df,skater,team,events,strengths,onice):
         player_shots = df.loc[(df['onice_for'].str.contains(skater))&(df['event_team_abbr']==team)]
     else:
         player_shots = df.loc[(df['onice_against'].str.contains(skater))&(df['event_team_abbr_2']==team)]
-
     [x,y] = np.round(np.meshgrid(np.linspace(x_min,x_max,(x_max-x_min)),np.linspace(-42.5,42.5,85)))
     xgoals_player = griddata((player_shots['x'],player_shots['y']),player_shots['xG'],(x,y),method='cubic',fill_value=0)
     xgoals_player = np.where(xgoals_player < 0,0,xgoals_player)
-    
-    difference = (gaussian_filter(xgoals_player,sigma = 3)) - xgoals_smooth
 
+    difference = (gaussian_filter(xgoals_player,sigma = 3)) - xgoals_smooth
+        
     fig = go.Figure(
-        data = go.Heatmap(x=np.linspace(x_min,x_max,(x_max-x_min)),
+        data = go.Heatmap(  x=np.linspace(x_min,x_max,(x_max-x_min)),
                             y=np.linspace(-42.5,42.5,85),
                             z=difference,
                             colorscale=[[0.0,'red'],[0.5,'white'],[1.0,'blue']],
                             connectgaps=True,
                             zsmooth='best',
-                            showscale=False)
+                            colorbar=dict(
+                                len = 0.7,
+                                orientation='h',
+                                showticklabels=False,
+                                thickness=15,
+                                yref='paper',
+                                yanchor='top',
+                                y=0
+                            ))
     )
 
     return fig
