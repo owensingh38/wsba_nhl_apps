@@ -66,11 +66,12 @@ def server(input, output, session):
                 season = int(season[0:4])
                 team = query['team'][0]
                 strengths = 'All Situations' if len(query['strength_state']) == 4 else query['strength_state']
+                span = 'Regular Season' if query['season_type'][0]=='2' else 'Playoffs'
 
                 return rink.update_layout( 
 
                     title=dict(
-                        text=f'{player} On-Ice xG at {strengths}; {season}-{season+1}, {'Regular Season' if query['season_type'][0]=='2' else 'Playoffs'}, {team}',
+                        text=f'{player} On-Ice xG at {strengths}; {season}-{season+1}, {span}, {team}',
                         x=0.5, y=0.96,
                         xanchor='center',
                         yanchor='top',
