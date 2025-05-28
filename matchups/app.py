@@ -25,7 +25,7 @@ def server(input, output, session):
         print(query)
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
         if 'strength_state' not in query.keys():
-            if 'team_1' or 'team_2' not in query.keys():
+            if 'teams' not in query.keys():
                 query = {'teams':['EDM,FLA'],'seasons':['20242025,20242025'],'season_type':['2'],'strength_state':['5v5']}
             else:
                 query.update({'strength_state':['5v5'],'season_type':['2']})
