@@ -1,5 +1,4 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import plot as wsba_plt
 import numpy as np
 from urllib.parse import *

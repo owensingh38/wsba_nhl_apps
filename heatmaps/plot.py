@@ -11,6 +11,7 @@ def wsba_rink(setting='full', vertical=False):
 
 def heatmap(df,skater,team,events,strengths,onice):
     df['event_team_abbr_2'] = np.where(df['home_team_abbr']==df['event_team_abbr'],df['away_team_abbr'],df['home_team_abbr'])
+    df['strength_state_2'] = df['strength_state'].str[::-1]
 
     df = df.loc[(df['event_type'].isin(events))&(df['x_adj'].notna())&(df['y_adj'].notna())]
     if onice == 'for':
@@ -39,7 +40,10 @@ def heatmap(df,skater,team,events,strengths,onice):
     df['strength_state'] = np.where(df['strength_state'].isin(['5v5','5v4','4v5']),df['strength_state'],'Other')
         
     if strengths != 'all':
-        df = df.loc[((df['strength_state'].isin(strengths)))]
+        if onice == 'against':
+            df = df.loc[((df['strength_state_2'].isin(strengths)))]
+        else:
+            df = df.loc[((df['strength_state'].isin(strengths)))]
 
     [x,y] = np.round(np.meshgrid(np.linspace(x_min,x_max,(x_max-x_min)),np.linspace(-42.5,42.5,85)))
     xgoals = griddata((df['x'],df['y']),df['xG'],(x,y),method='cubic',fill_value=0)
