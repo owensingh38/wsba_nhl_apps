@@ -26,7 +26,7 @@ def server(input, output, session):
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
         if 'strength_state' not in query.keys():
             if 'team_1' or 'team_2' not in query.keys():
-                query = {'team_1':['EDM'],'team_2':['FLA'],'season_1':['20242025'],'season_2':['20242025'],'season_type':['2'],'strength_state':['5v5']}
+                query = {'teams':['EDM,FLA'],'seasons':['20242025,20242025'],'season_type':['2'],'strength_state':['5v5']}
             else:
                 query.update({'strength_state':['5v5'],'season_type':['2']})
 
@@ -35,8 +35,11 @@ def server(input, output, session):
             q_string = query[param][0]
             query[param] = q_string.split(',')
 
+        for i in range(2):
+            query[f'team_{i+1}'] = [query['teams'][i]]
+            query[f'season_{i+1}'] = [query['seasons'][i]]
+
         print(query)
-        #Determine which season to load based on the input
         season_1 = query['season_1'][0]
         season_2 = query['season_2'][0]
         #Load appropriate dataframes
