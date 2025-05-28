@@ -55,14 +55,26 @@ def heatmap(df,skater,team,events,strengths,onice):
     xgoals_player = np.where(xgoals_player < 0,0,xgoals_player)
 
     difference = (gaussian_filter(xgoals_player,sigma = 3)) - xgoals_smooth
-        
+    data_min= difference.min()
+    data_max= difference.max()
+   
+    if abs(data_min) > data_max:
+        data_max = data_min * -1
+    elif data_max > abs(data_min):
+        data_min = data_max * -1
+
     fig = go.Figure(
-        data = go.Heatmap(  x=np.linspace(x_min,x_max,(x_max-x_min)),
+        data = go.Contour(  x=np.linspace(x_min,x_max,(x_max-x_min)),
                             y=np.linspace(-42.5,42.5,85),
                             z=difference,
-                            colorscale=[[0.0,'red'],[0.5,'white'],[1.0,'blue']],
+                            colorscale=[[0.0,'red'],[0.5,'#09090b'],[1.0,'blue']],
                             connectgaps=True,
-                            zsmooth='best',
+                            contours=dict(
+                                type='levels',
+                                start = data_min,
+                                end = data_max,
+                                size=(data_max-data_min)/11
+                            ),
                             colorbar=dict(
                                 len = 0.7,
                                 orientation='h',
