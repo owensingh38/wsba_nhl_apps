@@ -313,7 +313,7 @@ def server(input, output, session):
 
     @output()
     @render.data_frame
-    @reactive.event(input.metric_select)
+    @reactive.event(input.submit,input.metric_select)
     def plays():
         if not show_table.get():
             return None
@@ -340,7 +340,7 @@ def server(input, output, session):
 
     @output()
     @render_widget
-    @reactive.event(input.metric_select,input.timeline_select)
+    @reactive.event(input.submit,input.metric_select,input.timeline_select)
     def timelines():
         if not show_table.get():
             return None
