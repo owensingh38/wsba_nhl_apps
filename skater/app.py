@@ -24,11 +24,18 @@ def server(input, output, session):
         
         print(query)
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
-        if 'event_type' not in query.keys() or 'strength_state' not in query.keys():
-            if 'skater' not in query.keys():
-                query = {'skater':['8473419'],'season':['20182019'],'team':['BOS'],'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5'],'season_type':['2']}
-            else:
-                query.update({'event_type':['missed-shot,shot-on-goal,goal'],'strength_state':['5v5'],'season_type':['2']})
+        defaults = {
+            'skater':['8473419'],
+            'season':['20182019'],
+            'team':['BOS'],
+            'event_type':['missed-shot,shot-on-goal,goal'],
+            'strength_state':['5v5'],
+            'season_type':['2']
+        }
+        
+        for key in defaults.keys():
+            if key not in query.keys():
+                query.update({key:defaults[key]})
 
         #Iterate through query and parse params with multiple selections
         for param in query.keys():

@@ -24,12 +24,18 @@ def server(input, output, session):
         
         print(query)
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
-        if 'strength_state' not in query.keys():
-            if 'teams' not in query.keys():
-                query = {'teams':['EDM,FLA'],'seasons':['20242025,20242025'],'season_type':['2'],'strength_state':['5v5']}
-            else:
-                query.update({'strength_state':['5v5'],'season_type':['2']})
-
+        #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
+        defaults = {
+            'seasona':['20242025,20242025'],
+            'teama':['EDM,FLA'],
+            'strength_state':['5v5'],
+            'season_type':['2']
+        }
+        
+        for key in defaults.keys():
+            if key not in query.keys():
+                query.update({key:defaults[key]})
+        
         #Iterate through query and parse params with multiple selections
         for param in query.keys():
             q_string = query[param][0]
