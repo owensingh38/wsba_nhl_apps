@@ -99,7 +99,10 @@ app_ui = ui.page_fluid(
     ),
     ui.output_ui('add_filters'),
     output_widget("plot_game"),
-    ui.output_data_frame("plays")
+    ui.output_ui('metrics'),
+    ui.output_ui('timeline_filter'),
+    ui.output_data_frame("plays"),
+    output_widget("timelines"),
 )
 
 def server(input, output, session):
@@ -283,29 +286,104 @@ def server(input, output, session):
                     font_size=10
                 )
             )
+
+    @output
+    @render.ui
+    def metrics():
+        query = params()
+        if query['table'][0]=='true':
+            return ui.tags.div(
+                    {'class':'custom-input'},
+                    ui.input_selectize('metric_select','Metric',['Plays','Timelines'])
+                )
+        else:
+            return None
         
+    @output
+    @render.ui
+    @reactive.event(input.metric_select)
+    def timeline_filter():
+        if input.metric_select()=='Timelines':
+            return ui.tags.div(
+                    {'class':'custom-input'},
+                    ui.input_selectize('timeline_select','Timeline',['xG','Fenwick','Shots','Goals'])
+                )
+        else:
+            return None
+
     @output()
     @render.data_frame
-    @reactive.event(input.submit, submitted)
+    @reactive.event(input.metric_select)
     def plays():
         if not show_table.get():
             return None
         else:
-            df = game_df.get()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
-                'event_num':'#',
-                'period':'Period',
-                'seconds_elapsed':'Seconds',
-                'strength_state':'Strength State',
-                'event_type':'Event',
-                'event_team_abbr':'Team',
-                'event_player_1_name':'Player',
-                'shot_type':'Shot Type',
-                'zone_code':'Zone Code',
-                'away_score':'Away Score',
-                'home_score':'Home Score'
-            })
-            
-            df['xG'] = df['xG'].round(4)
-            return render.DataTable(df)
+            if input.metric_select()=='Timelines':
+                return None
+            else:
+                df = game_df.get()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
+                    'event_num':'#',
+                    'period':'Period',
+                    'seconds_elapsed':'Seconds',
+                    'strength_state':'Strength State',
+                    'event_type':'Event',
+                    'event_team_abbr':'Team',
+                    'event_player_1_name':'Player',
+                    'shot_type':'Shot Type',
+                    'zone_code':'Zone Code',
+                    'away_score':'Away Score',
+                    'home_score':'Home Score'
+                })
+                
+                df['xG'] = df['xG'].round(4)
+                return render.DataTable(df)
+
+    @output()
+    @render_widget
+    @reactive.event(input.metric_select,input.timeline_select)
+    def timelines():
+        if not show_table.get():
+            return None
+        else:
+            if input.metric_select()=='Plays':
+                return None
+            else:
+                df = wsba_plt.timelines(game_df.get())
+                colors = wsba_plt.colors(df)
+                timelines = px.line(df,
+                                    x='Time (in seconds)',
+                                    y=input.timeline_select(),
+                                    color='Team',
+                                    color_discrete_map=colors,
+                                    hover_data=['Away Score','Home Score']
+                                    )
+
+                timelines.update_traces(
+                    line=dict(
+                        width=4
+                    ))
+
+                return timelines.update_layout(  
+                    paper_bgcolor="rgba(0,0,0,0)", 
+                    plot_bgcolor="rgba(0,0,0,0)",  
+                    font_color='white',         
+                    xaxis=dict(title=dict(text='Time (in seconds)'),showgrid=False),
+                    yaxis=dict(title=dict(text=input.timeline_select()),showgrid=False),
+
+                    legend=dict(
+                        title='Team',
+                        orientation='h',
+                        x=0.5,
+                        y=1,
+                        xanchor='center',
+                        yanchor='top',
+                        font=dict(color='white')
+                    ),
+
+                    hoverlabel=dict(
+                        font_size=10
+                    )
+            )
+
 
 app = App(app_ui, server)

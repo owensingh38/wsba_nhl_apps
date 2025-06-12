@@ -34,7 +34,7 @@ def colors(df):
 
 def prep(df,events,strengths):
     df = df.loc[(df['event_type'].isin(events))]
-
+    
     if 'all' not in strengths:
         df = df.loc[((df['strength_state'].isin(strengths)))]
 
@@ -42,8 +42,12 @@ def prep(df,events,strengths):
     df['size'] = np.where(df['xG']<=0,40,df['xG']*400)
     
     df['marker'] = df['event_type'].replace(event_markers)
-    
+
+    info = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/nhl_teaminfo.csv')
+    df = pd.merge(df,info,how='left',left_on=['season','event_team_abbr'],right_on=['seasonId','triCode'])
+
     df['Description'] = df['description']
+    df['Logo'] = '<img src="'+df['teamLogo']+'" width="100%" height="30px">'
     df['Team'] = df['event_team_abbr']
     df['Event Num.'] = df['event_num']
     df['Period'] = df['period']
@@ -56,4 +60,17 @@ def prep(df,events,strengths):
     df['Event Distance from Attacking Net'] = df['event_distance']
     df['Event Angle to Attacking Net'] = df['event_angle']
     df['xG'] = df['xG']*100
+    return df
+
+def timelines(df):
+    df['xG'] = (df['xG']/100).replace({np.nan:0}).astype(float)
+    df['Goals'] = np.where(df['event_type']=='goal',1,0)
+    df['Shots'] = np.where(df['event_type'].isin(['shot-on-goal','goal']),1,0)
+    df['Fenwick'] = np.where(df['event_type'].isin(['missed-shot','shot-on-goal','goal']),1,0)
+
+    df['xG'] = df.groupby('event_team_abbr')['xG'].cumsum()
+    df['Goals'] = df.groupby('event_team_abbr')['Goals'].cumsum()
+    df['Shots'] = df.groupby('event_team_abbr')['Shots'].cumsum()
+    df['Fenwick'] = df.groupby('event_team_abbr')['Fenwick'].cumsum()
+    
     return df
