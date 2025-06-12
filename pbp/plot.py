@@ -35,7 +35,7 @@ def colors(df):
 def prep(df,events,strengths):
     df = df.loc[(df['event_type'].isin(events))]
 
-    if strengths != 'all':
+    if 'all' not in strengths:
         df = df.loc[((df['strength_state'].isin(strengths)))]
 
     df['xG'] = df['xG'].fillna(0)

@@ -7,38 +7,47 @@ from shiny import *
 from shinywidgets import output_widget, render_widget 
 
 app_ui = ui.page_fluid(
+    ui.tags.link(
+        rel='stylesheet',
+        href='https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap'
+    ),
     ui.tags.style(
         """
         body {
             background-color: #09090b;
             color: white;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Bebas Neue', sans-serif;
         }
 
-        .custom-input {
-            background-color: #111113;
-            border: 1px solid #2a2a2d;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 8px;
-            margin-right: 10px;
-            min-width: 160px;
-            font-weight: 600;
-            box-shadow: 0 0 6px rgba(0,0,0,0.2);
+        .custom-input input.form-control,
+        .custom-input .selectize-control,
+        .custom-input .selectize-input {
+            background-color: #09090b !important;  /* black background */
+            color: white !important;               /* white font color */
+            border-radius: 4px;
+            border: 1px solid #444;
         }
 
-        .custom-input:focus {
-            outline: none;
-            border-color: #444;
-            box-shadow: 0 0 4px #3b82f6;
+        .custom-input .selectize-dropdown,
+        .custom-input .selectize-dropdown-content {
+            background-color: #09090b !important;
+            color: white !important;
+        }          
+
+        .custom-input .selectize-control.multi .item {
+            background-color: #09090b !important;
+            color: white !important;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin: 2px 4px 2px 0;
         }
 
-        .panel-well {
-            background-color: #111113 !important;
-            border: 1px solid #2a2a2d;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        label.control-label {
+            color: white !important;
+        }   
+
+        .selectize-control.multi {
+            width: 300px !important;
         }
 
         .form-row {
@@ -56,28 +65,63 @@ app_ui = ui.page_fluid(
         .hide {
             display: none;
         }
+
+        .table thead tr {
+            --bs-table-bg: #09090b;
+            --bs-table-color-state: white;
+        }
+
+        .table thead tr th {
+            white-space: nowrap;
+            text-align: center;
+            color: white;
+            background-color: #09090b;
+        }
+
+        .table tbody tr {
+            --bs-table-bg: #09090b;
+            --bs-table-color-state: white;
+        }
+
+        .table tbody tr td {
+            white-space: nowrap;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: white;
+            background-color: #09090b;
+        }
+
+        .table thead th {
+            text-align: center !important;
+        }
     """
     ),
     ui.output_ui('add_filters'),
     output_widget("plot_game"),
+    ui.output_data_frame("plays")
 )
 
 def server(input, output, session):
     query = reactive.Value(None)
+
+    def schedule():
+        return pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
 
     @reactive.Effect
     def query_params():
         #Retreive query parameters
         search = session.input[".clientdata_url_search"]()
         q = parse_qs(urlparse(search).query)
-        
+
         print(q)
         #If no input data is provided automatically provide a select game and plot all 5v5 fenwick shots
         defaults = {
-            'game_id':['2024021000'],
+            'game_id':[str(schedule()['id'].iloc[-1])],
             'event_type':['missed-shot,shot-on-goal,goal'],
             'strength_state':['all'],
-            'filters':['false']
+            'filters':['false'],
+            'table':['false']
         }
 
         for key in defaults.keys():
@@ -90,10 +134,7 @@ def server(input, output, session):
             q.update({'filters':['false']})
         
         query.set(q)
-    
-    def schedule():
-        return pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
-    
+        
     def active_params():
         return query.get() or {}
 
@@ -103,6 +144,7 @@ def server(input, output, session):
         query = active_params()
 
         games = schedule() 
+
         game_title = games.loc[games['id'].astype(str)==query['game_id'][0],'game_title'].to_list()[0]
         date = games.loc[games['id'].astype(str)==query['game_id'][0],'date'].to_list()[0]
         all_strengths = ['3v3','3v4','3v5','4v3','4v4','4v5','4v6','5v3','5v4','5v5','5v6','6v4','6v5']
@@ -115,7 +157,7 @@ def server(input, output, session):
 
             return ui.panel_well(
                 ui.tags.div(
-                {"class": "form-row"},
+                {"class": "form-row custom-input"},
                     ui.input_date('game_date','Date',value=date),
                     ui.input_selectize('game_title','Game',{query['game_id'][0]:game_title}),
                     ui.input_selectize('event_type','Events',['blocked-shot','missed-shot','shot-on-goal','goal','hit','penalty','giveaway','takeaway','faceoff'],selected=query['event_type'],multiple=True),
@@ -160,10 +202,11 @@ def server(input, output, session):
         if not submitted.get():
             submitted.set(True)
 
-    @output()
-    @render_widget
+    game_df = reactive.Value(pd.DataFrame())
+    show_table = reactive.Value(False)
+    @reactive.effect
     @reactive.event(input.submit, submitted)
-    def plot_game():
+    def ret_game():
         query = params()
 
         #Iterate through query and parse params with multiple selections
@@ -181,6 +224,18 @@ def server(input, output, session):
         #Prepare dataframe for plotting based on URL parameters
         df = df.loc[df['game_id'].astype(str).isin(query['game_id'])].replace({np.nan: None})
         df = wsba_plt.prep(df,events=query['event_type'],strengths=query['strength_state'])
+
+        game_df.set(df)
+
+        if query['table'][0]=='true':
+            show_table.set(True)
+    
+    @output()
+    @render_widget
+    @reactive.event(input.submit, submitted)
+    def plot_game():
+        #Retreive game
+        df = game_df.get()
 
         #Return empty rink if no data exists else continue
         if df.empty:
@@ -228,5 +283,29 @@ def server(input, output, session):
                     font_size=10
                 )
             )
+        
+    @output()
+    @render.data_frame
+    @reactive.event(input.submit, submitted)
+    def plays():
+        if not show_table.get():
+            return None
+        else:
+            df = game_df.get()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
+                'event_num':'#',
+                'period':'Period',
+                'seconds_elapsed':'Seconds',
+                'strength_state':'Strength State',
+                'event_type':'Event',
+                'event_team_abbr':'Team',
+                'event_player_1_name':'Player',
+                'shot_type':'Shot Type',
+                'zone_code':'Zone Code',
+                'away_score':'Away Score',
+                'home_score':'Home Score'
+            })
+            
+            df['xG'] = df['xG'].round(4)
+            return render.DataTable(df)
 
 app = App(app_ui, server)
