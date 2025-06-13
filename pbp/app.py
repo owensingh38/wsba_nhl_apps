@@ -109,7 +109,9 @@ def server(input, output, session):
     query = reactive.Value(None)
 
     def schedule():
-        return pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
+        schedule = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
+        
+        return schedule.loc[schedule['gameState'].isin(['OFF','FINAL'])]
 
     @reactive.Effect
     def query_params():
