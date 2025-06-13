@@ -132,11 +132,6 @@ def server(input, output, session):
         for key in defaults.keys():
             if key not in q.keys():
                 q.update({key:defaults[key]})
-
-        #Add filters if necessary
-        try: q['filters']
-        except:
-            q.update({'filters':['false']})
         
         query.set(q)
         
@@ -215,9 +210,13 @@ def server(input, output, session):
         query = params()
 
         #Iterate through query and parse params with multiple selections
+        #If it is already parsed skip this
         for param in query.keys():
-            q_string = query[param][0]
-            query[param] = q_string.split(',')
+            if len(query[param])>1:
+                ''
+            else:
+                q_string = query[param][0]
+                query[param] = q_string.split(',')
 
         print(query)
         #Determine which season to load based on the input game_id
