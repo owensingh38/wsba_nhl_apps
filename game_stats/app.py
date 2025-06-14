@@ -172,9 +172,10 @@ def server(input, output, session):
     def active_game():
         #Determine which season to load based on the input game_id
         info = game_info.get()
+        season = info['season']
         #Load appropriate dataframe
-        df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/wsba_nhl_{info['season']}_game_log.parquet')
-        pbp = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{info['season']}.parquet')
+        df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/wsba_nhl_{season}_game_log.parquet')
+        pbp = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
 
         game_df.set([df.loc[(df['Game']==info['game_id'])], pbp.loc[(pbp['game_id']==info['game_id'])&(pbp['event_type']=='goal')]])
 
