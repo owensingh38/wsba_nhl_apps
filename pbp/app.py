@@ -224,12 +224,12 @@ def server(input, output, session):
         season = f'{front_year}{front_year+1}'
         #Load appropriate dataframe
         df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
-    
-        #Prepare dataframe for plotting based on URL parameters
-        df = df.loc[df['game_id'].astype(str).isin(query['game_id'])].replace({np.nan: None})
-        df = wsba_plt.prep(df,events=query['event_type'],strengths=query['strength_state'])
 
-        game_df.set(df)
+        #Prepare dataframe for plotting based on URL parameters
+        game_data = df.loc[df['game_id'].astype(str).isin(query['game_id'])].replace({np.nan: None})
+        game_data = wsba_plt.prep(game_data,events=query['event_type'],strengths=query['strength_state'])
+
+        game_df.set(game_data)
 
         if query['table'][0]=='true':
             show_table.set(True)
@@ -239,7 +239,7 @@ def server(input, output, session):
     @reactive.event(input.submit, submitted)
     def plot_game():
         #Retreive game
-        df = game_df.get()
+        df = game_df.get().copy()
 
         #Return empty rink if no data exists else continue
         if df.empty:
@@ -322,7 +322,7 @@ def server(input, output, session):
             if input.metric_select()=='Timelines':
                 return None
             else:
-                df = game_df.get()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
+                df = game_df.get().copy()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
                     'event_num':'#',
                     'period':'Period',
                     'seconds_elapsed':'Seconds',
@@ -349,9 +349,9 @@ def server(input, output, session):
             if input.metric_select()=='Plays':
                 return None
             else:
-                df = wsba_plt.timelines(game_df.get())
-                colors = wsba_plt.colors(df)
-                timelines = px.line(df,
+                data = wsba_plt.timelines(game_df.get().copy())
+                colors = wsba_plt.colors(data)
+                timelines = px.line(data,
                                     x='Time (in seconds)',
                                     y=input.timeline_select(),
                                     color='Team',
@@ -385,6 +385,5 @@ def server(input, output, session):
                         font_size=10
                     )
             )
-
 
 app = App(app_ui, server)
