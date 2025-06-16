@@ -109,6 +109,14 @@ app_ui = ui.page_fluid(
     ui.row(
         ui.column(6, ui.output_data_frame("away_stats")),
         ui.column(6, ui.output_data_frame("home_stats"))
+    ),
+    ui.row(
+        ui.column(6, ui.tags.h4(ui.output_text('away_goalie_header'))),
+        ui.column(6, ui.tags.h4(ui.output_text('home_goalie_header')))
+    ),
+    ui.row(
+        ui.column(6, ui.output_data_frame("away_goalie")),
+        ui.column(6, ui.output_data_frame("home_goalie"))
     )
 )
 
@@ -173,9 +181,10 @@ def server(input, output, session):
         season = info['season']
         #Load appropriate dataframe
         df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/wsba_nhl_{season}_game_log.parquet')
+        goalie_df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/goalie/wsba_nhl_{season}_game_log_goalie.parquet')
         pbp = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
 
-        game_df.set([df.loc[(df['Game']==info['game_id'])], pbp.loc[(pbp['game_id']==info['game_id'])&(pbp['event_type']=='goal')]])
+        game_df.set([df.loc[(df['Game']==info['game_id'])], pbp.loc[(pbp['game_id']==info['game_id'])&(pbp['event_type']=='goal')], goalie_df.loc[(goalie_df['Game']==info['game_id'])]])
 
     @output
     @render.ui
@@ -255,6 +264,20 @@ def server(input, output, session):
         return f'{team} Stats'
 
     @output
+    @render.text
+    def away_goalie_header():
+        team = game_info.get()['away_team_abbr']
+
+        return f'{team} Goalie Stats'
+
+    @output
+    @render.text
+    def home_goalie_header():
+        team = game_info.get()['home_team_abbr']
+
+        return f'{team} Goalie Stats'
+    
+    @output
     @render.data_frame
     def away_stats():
         df = game_df.get()[0]
@@ -324,4 +347,54 @@ def server(input, output, session):
             'xGi':'ixG'
         }).drop(columns=['ID']).rename(columns={'Position':'POS','Handedness':'Hand'}))
 
+    @output
+    @render.data_frame
+    def away_goalie():
+        df = game_df.get()[2]
+        info = game_info.get()
+
+        cols = [
+            'Goalie','ID','TOI','Position','Handedness','GA','FA','xGA','GSAx'
+        ]
+
+        df = df.loc[(df['Team']==info['away_team_abbr'])&(df['Strength']==input.strength_state()),cols]
+
+        for col in ['TOI','xGA','GSAx']:
+            try:
+                if '%' in col:
+                    df[col] = (df[col]*100).round(2).astype(str) + '%'
+                else:
+                    df[col] = df[col].round(2)
+            except:
+                continue
+        
+        df = fix_names(df,'Goalie')
+
+        return render.DataTable(df.drop(columns=['ID']).rename(columns={'Position':'POS','Handedness':'Hand'}))
+    
+    @output
+    @render.data_frame
+    def home_goalie():
+        df = game_df.get()[2]
+        info = game_info.get()
+
+        cols = [
+            'Goalie','ID','TOI','Position','Handedness','GA','FA','xGA','GSAx'
+        ]
+
+        df = df.loc[(df['Team']==info['home_team_abbr'])&(df['Strength']==input.strength_state()),cols]
+
+        for col in ['TOI','xGA','GSAx']:
+            try:
+                if '%' in col:
+                    df[col] = (df[col]*100).round(2).astype(str) + '%'
+                else:
+                    df[col] = df[col].round(2)
+            except:
+                continue
+        
+        df = fix_names(df,'Goalie')
+
+        return render.DataTable(df.drop(columns=['ID']).rename(columns={'Position':'POS','Handedness':'Hand'}))
+    
 app = App(app_ui, server)

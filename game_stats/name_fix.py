@@ -21,9 +21,9 @@ def scrape_info(player_ids):
     #Return: player data
     return df
 
-def fix_names(stats):
-    missing = stats.loc[stats['Player']=='0']
-    stats = stats.loc[stats['Player']!='0']  
+def fix_names(stats,name='Player'):
+    missing = stats.loc[stats[name]=='0']
+    stats = stats.loc[stats[name]!='0']  
     
     if not missing.empty:
         data = scrape_info(missing['ID'])[['fullName','playerId','position','shootsCatches']].rename(columns={
@@ -37,10 +37,10 @@ def fix_names(stats):
             'birthCountry':'Nationality',
             'shootsCatches':'Handedness'}) 
 
-        missing = missing.drop(columns=['Player','Position','Handedness'])         
+        missing = missing.drop(columns=[name,'Position','Handedness'])         
         miss = pd.merge(missing,data,how='left',on=['ID'])
 
-        df = pd.concat([stats,miss]).sort_values(['Player','ID'])
+        df = pd.concat([stats,miss]).sort_values([name,'ID'])
 
         return df
     else:
