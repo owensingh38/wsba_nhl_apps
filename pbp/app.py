@@ -126,7 +126,8 @@ def server(input, output, session):
             'event_type':['missed-shot,shot-on-goal,goal'],
             'strength_state':['all'],
             'filters':['false'],
-            'table':['false']
+            'table':['false'],
+            'title':['true']
         }
 
         for key in defaults.keys():
@@ -265,28 +266,44 @@ def server(input, output, session):
             for trace in plot.data:
                 rink.add_trace(trace)
 
-            return rink.update_layout(
-                title=dict(
-                    text=game_title,
-                    x=0.5, y=0.94,
-                    xanchor='center',
-                    yanchor='top',
-                    font=dict(color='white')
-                ),
-                           
-                legend=dict(
-                    orientation='h',
-                    x=0.49,
-                    y=-0.04,
-                    xanchor='center',
-                    yanchor='bottom',
-                    font=dict(color='white')
-                ),
+            if active_params()['title'][0]=='false':
+                return rink.update_layout(                                
+                    legend=dict(
+                        orientation='h',
+                        x=0.49,
+                        y=-0.04,
+                        xanchor='center',
+                        yanchor='bottom',
+                        font=dict(color='white')
+                    ),
 
-                hoverlabel=dict(
-                    font_size=10
+                    hoverlabel=dict(
+                        font_size=10
+                    )
                 )
-            )
+            else:
+                return rink.update_layout(
+                    title=dict(
+                        text=game_title,
+                        x=0.5, y=0.94,
+                        xanchor='center',
+                        yanchor='top',
+                        font=dict(color='white')
+                    ),
+                                
+                    legend=dict(
+                        orientation='h',
+                        x=0.49,
+                        y=-0.04,
+                        xanchor='center',
+                        yanchor='bottom',
+                        font=dict(color='white')
+                    ),
+
+                    hoverlabel=dict(
+                        font_size=10
+                    )
+                )
 
     @output
     @render.ui

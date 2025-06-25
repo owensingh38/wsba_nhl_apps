@@ -139,6 +139,7 @@ def server(input, output, session):
 
         defaults = {
             'game_id':['2024020001'],
+            'title':['true']
         }
 
         for key in defaults.keys():
@@ -247,7 +248,7 @@ def server(input, output, session):
     @output
     @render.text
     def game_header():
-        return game_info.get()['title']
+        return game_info.get()['title'] if active_params()['title'][0] == 'true' else None
 
     @output
     @render.text
