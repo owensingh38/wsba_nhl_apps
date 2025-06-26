@@ -55,6 +55,7 @@ def heatmap_prep(df,team,events,strengths,onice,flip=False):
     df['onice_against'] = np.where(df['away_team_abbr']==df['event_team_abbr'],df['home_on_ice'],df['away_on_ice'])
 
     df['strength_state'] = np.where(df['strength_state'].isin(['5v5','5v4','4v5']),df['strength_state'],'Other')
+    df['strength_state_2'] = np.where(df['strength_state_2'].isin(['5v5','5v4','4v5']),df['strength_state_2'],'Other')
         
     if strengths != 'all':
         df = df.loc[((df['strength_state'].isin(strengths)))]

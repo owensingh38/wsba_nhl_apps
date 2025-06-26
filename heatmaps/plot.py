@@ -38,6 +38,7 @@ def heatmap(df,skater,team,events,strengths,onice):
     df['onice_against'] = np.where(df['away_team_abbr']==df['event_team_abbr'],df['home_on_ice'],df['away_on_ice'])
 
     df['strength_state'] = np.where(df['strength_state'].isin(['5v5','5v4','4v5']),df['strength_state'],'Other')
+    df['strength_state_2'] = np.where(df['strength_state_2'].isin(['5v5','5v4','4v5']),df['strength_state_2'],'Other')
         
     if strengths != 'all':
         if onice == 'against':
