@@ -20,7 +20,7 @@ def wsba_rink(setting='full', vertical=False):
     return rink_plot.rink(setting=setting, vertical=vertical)
 
 def colors(df):
-    team = list(df['away_team_abbr'])[0]
+    team = list(df['event_team_abbr'])[0]
     season = list(df['season'])[0]
     team_data = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/nhl_teaminfo.csv')
 
