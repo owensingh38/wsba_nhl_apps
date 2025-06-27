@@ -256,7 +256,7 @@ def server(input, output, session):
                               color='Team',
                               color_discrete_map=colors,
                               hover_name='Description',
-                              hover_data=['Event Num.', 'Period', 'Time (in seconds)',
+                              hover_data=['Event Num.', 'Period', 'Time (in Period)',
                                           'Strength',
                                           'Away Score', 'Home Score', 'x', 'y',
                                           'Event Distance from Attacking Net',
@@ -339,10 +339,9 @@ def server(input, output, session):
             if input.metric_select()=='Timelines':
                 return None
             else:
-                df = game_df.get().copy()[['event_num','period','seconds_elapsed','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
+                df = game_df.get().copy()[['event_num','period','Time (in Period)','strength_state','event_type','Description','event_team_abbr','event_player_1_name','shot_type','zone_code','x','y','away_score','home_score','xG']].rename(columns={
                     'event_num':'#',
                     'period':'Period',
-                    'seconds_elapsed':'Seconds',
                     'strength_state':'Strength State',
                     'event_type':'Event',
                     'event_team_abbr':'Team',
@@ -369,7 +368,7 @@ def server(input, output, session):
                 data = wsba_plt.timelines(game_df.get().copy())
                 colors = wsba_plt.colors(data)
                 timelines = px.line(data,
-                                    x='Time (in seconds)',
+                                    x='Time (in Period)',
                                     y=input.timeline_select(),
                                     color='Team',
                                     color_discrete_map=colors,
@@ -385,7 +384,7 @@ def server(input, output, session):
                     paper_bgcolor="rgba(0,0,0,0)", 
                     plot_bgcolor="rgba(0,0,0,0)",  
                     font_color='white',         
-                    xaxis=dict(title=dict(text='Time (in seconds)'),showgrid=False),
+                    xaxis=dict(title=dict(text='Time (in Period)'),showgrid=False),
                     yaxis=dict(title=dict(text=input.timeline_select()),showgrid=False),
 
                     legend=dict(

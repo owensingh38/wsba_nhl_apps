@@ -32,6 +32,13 @@ def colors(df):
 
     return team_info
 
+def convert_time(seconds,period):
+    period_seconds = seconds - ((period-1)*1200)
+    minutes = int(period_seconds/60)
+    seconds = int(((period_seconds/60)-minutes)*60)
+
+    return f'{minutes}:{seconds:02}'
+
 def prep(df,events,strengths):
     df = df.loc[(df['event_type'].isin(events))]
     
@@ -48,6 +55,7 @@ def prep(df,events,strengths):
     df['Event Num.'] = df['event_num']
     df['Period'] = df['period']
     df['Time (in seconds)'] = df['seconds_elapsed']
+    df['Time (in Period)'] = df.apply(lambda x: convert_time(x['Time (in seconds)'],x['Period']), axis=1)
     df['Strength'] = df['strength_state']
     df['Away Score'] = df['away_score']
     df['Home Score'] = df['home_score']
