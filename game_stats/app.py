@@ -125,7 +125,7 @@ def server(input, output, session):
     game_info = reactive.Value(None)
 
     def get_schedule():
-        games = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
+        games = pd.read_csv('https://weakside-breakout.s3.us-east-2.amazonaws.com/info/schedule.csv')
         
         return games.loc[games['gameState'].isin(['OFF','FINAL'])]
 
@@ -181,9 +181,9 @@ def server(input, output, session):
         info = game_info.get()
         season = info['season']
         #Load appropriate dataframe
-        df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/wsba_nhl_{season}_game_log.parquet')
-        goalie_df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/game_log/goalie/wsba_nhl_{season}_game_log_goalie.parquet')
-        pbp = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
+        df = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/game_log/wsba_nhl_{season}_game_log.parquet')
+        goalie_df = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/game_log/goalie/wsba_nhl_{season}_game_log_goalie.parquet')
+        pbp = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season}.parquet')
 
         game_df.set([df.loc[(df['Game']==info['game_id'])], pbp.loc[(pbp['game_id']==info['game_id'])&(pbp['event_type']=='goal')], goalie_df.loc[(goalie_df['Game']==info['game_id'])]])
 

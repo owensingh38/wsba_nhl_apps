@@ -46,7 +46,7 @@ def server(input, output, session):
         #Determine which season to load based on the input
         season = query['season'][0]
         #Load appropriate dataframe
-        df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
+        df = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season}.parquet')
     
         #Prepare dataframe for plotting based on URL parameters
         df = df.loc[(df['event_player_1_id'].astype(str).str.replace('.0','').isin(query['skater']))&(df['season'].astype(str).isin(query['season']))&(df['event_team_abbr'].astype(str).isin(query['team']))&(df['season_type'].astype(str).isin(query['season_type']))].replace({np.nan: None})

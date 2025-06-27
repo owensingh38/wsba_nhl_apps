@@ -22,7 +22,7 @@ def wsba_rink(setting='full', vertical=False):
 def colors(df):
     team = list(df['event_team_abbr'])[0]
     season = list(df['season'])[0]
-    team_data = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/nhl_teaminfo.csv')
+    team_data = pd.read_csv('https://weakside-breakout.s3.us-east-2.amazonaws.com/info/nhl_teaminfo.csv')
 
     team_info ={
         team: list(team_data.loc[team_data['WSBA']==f'{team}{season}','Primary Color'])[0],

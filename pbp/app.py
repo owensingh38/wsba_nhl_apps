@@ -109,7 +109,7 @@ def server(input, output, session):
     query = reactive.Value(None)
 
     def schedule():
-        schedule = pd.read_csv('https://f005.backblazeb2.com/file/weakside-breakout/info/schedule.csv')
+        schedule = pd.read_csv('https://weakside-breakout.s3.us-east-2.amazonaws.com/info/schedule.csv')
         
         return schedule.loc[schedule['gameState'].isin(['OFF','FINAL'])]
 
@@ -224,7 +224,7 @@ def server(input, output, session):
         front_year = int(query['game_id'][0][0:4])
         season = f'{front_year}{front_year+1}'
         #Load appropriate dataframe
-        df = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season}.parquet')
+        df = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season}.parquet')
 
         #Prepare dataframe for plotting based on URL parameters
         game_data = df.loc[df['game_id'].astype(str).isin(query['game_id'])].replace({np.nan: None})

@@ -50,12 +50,12 @@ def server(input, output, session):
         season_2 = query['season_2'][0]
         #Load appropriate dataframes
         if season_1 == season_2:
-            df_1 = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season_1}.parquet')
+            df_1 = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season_1}.parquet')
             df_2 = df_1
 
         else:
-            df_1 = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season_1}.parquet')
-            df_2 = pd.read_parquet(f'https://f005.backblazeb2.com/file/weakside-breakout/pbp/{season_2}.parquet')
+            df_1 = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season_1}.parquet')
+            df_2 = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/{season_2}.parquet')
         
         events = ['missed-shot','shot-on-goal','goal']
         team_xg = {}
