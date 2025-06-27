@@ -41,7 +41,8 @@ def convert_time(seconds,period):
 
 def prep(df,events,strengths):
     df = df.loc[(df['event_type'].isin(events))]
-    
+
+    df['strength_state'] = np.where(df['strength_state'].isin(['5v5','5v4','4v5']),df['strength_state'],'Other')
     if 'all' not in strengths:
         df = df.loc[((df['strength_state'].isin(strengths)))]
 
