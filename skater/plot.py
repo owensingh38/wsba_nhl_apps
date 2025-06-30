@@ -50,9 +50,10 @@ def prep(df,events,strengths):
     df['Strength'] = df['strength_state']
     df['Away Score'] = df['away_score']
     df['Home Score'] = df['home_score']
-    df['x'] = np.where(df['x_adj']<0,-df['y_adj'],df['y_adj'])
+    df['x'] = np.where(df['x_adj']<0,df['y_adj'],-df['y_adj'])
     df['y'] = abs(df['x_adj'])
     df['Event Distance from Attacking Net'] = df['event_distance']
     df['Event Angle to Attacking Net'] = df['event_angle']
     df['xG'] = df['xG']*100
+
     return df
