@@ -46,7 +46,7 @@ def prep(df,events,strengths):
     if 'all' not in strengths:
         df = df.loc[((df['strength_state'].isin(strengths)))]
 
-    df['xG'] = df['xG'].fillna(0)
+    df = df.fillna(0)
     df['size'] = np.where(df['xG']<=0,40,df['xG']*400)
     
     df['marker'] = df['event_type'].replace(event_markers)

@@ -12,6 +12,7 @@ def wsba_rink(setting='full', vertical=False):
 def heatmap_prep(df,team,events,strengths,onice,flip=False):
     df['event_team_abbr_2'] = np.where(df['home_team_abbr']==df['event_team_abbr'],df['away_team_abbr'],df['home_team_abbr'])
 
+    df = df.fillna(0)
     df = df.loc[(df['event_type'].isin(events))&(df['x_adj'].notna())&(df['y_adj'].notna())]
     if flip:
         if onice == 'for':

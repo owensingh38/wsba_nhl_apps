@@ -13,6 +13,7 @@ def heatmap(df,team,events,strengths,onice):
     df['event_team_abbr_2'] = np.where(df['home_team_abbr']==df['event_team_abbr'],df['away_team_abbr'],df['home_team_abbr'])
     df['strength_state_2'] = df['strength_state'].str[::-1]
 
+    df = df.fillna(0)
     df = df.loc[(df['event_type'].isin(events))&(df['x_adj'].notna())&(df['y_adj'].notna())]
     if onice == 'for':
         df['x'] = abs(df['x_adj'])
