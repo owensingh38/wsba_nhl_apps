@@ -5,8 +5,6 @@ import numpy as np
 from urllib.parse import *
 from shiny import *
 from shinywidgets import output_widget, render_widget 
-import warnings
-warnings.filterwarnings('ignore')
 
 app_ui = ui.page_fluid(
     ui.tags.link(
