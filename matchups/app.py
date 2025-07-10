@@ -26,8 +26,8 @@ def server(input, output, session):
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
         #If no input data is provided automatically provide a select skater and plot all 5v5 fenwick shots
         defaults = {
-            'seasona':['20242025,20242025'],
-            'teama':['EDM,FLA'],
+            'seasons':['20242025,20242025'],
+            'teams':['EDM,FLA'],
             'strength_state':['5v5'],
             'season_type':['2']
         }

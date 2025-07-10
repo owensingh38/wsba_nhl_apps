@@ -5,6 +5,8 @@ import numpy as np
 from urllib.parse import *
 from shiny import *
 from shinywidgets import output_widget, render_widget 
+import warnings
+warnings.filterwarnings('ignore')
 
 app_ui = ui.page_fluid(
     ui.tags.link(
@@ -247,6 +249,7 @@ def server(input, output, session):
             return wsba_plt.wsba_rink()
         else:
             game_title = df['game_title'].to_list()[0]
+            print(game_title)
             colors = wsba_plt.colors(df)
             rink = wsba_plt.wsba_rink()
 
