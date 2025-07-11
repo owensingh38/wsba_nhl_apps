@@ -118,7 +118,7 @@ def calc_team(pbp,game_strength):
     onice_stats['PM%'] = onice_stats['Take']/(onice_stats['Give']+onice_stats['Take'])
     onice_stats['HF%'] = onice_stats['HF']/(onice_stats['HF']+onice_stats['HA'])
     onice_stats['PENL%'] = onice_stats['Draw']/(onice_stats['Draw']+onice_stats['Penl'])
-    onice_stats['GSAx'] = onice_stats['xGA']/onice_stats['GA']
+    onice_stats['GSAx'] = onice_stats['xGA']-onice_stats['GA']
 
     return onice_stats
 

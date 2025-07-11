@@ -205,6 +205,6 @@ def server(input, output, session):
                                 'FF%','xGF%',
                                 'GSAx']].round(2)
         
-        return render.DataGrid(total)
+        return render.DataTable(total)
 
 app = App(app_ui, server)
