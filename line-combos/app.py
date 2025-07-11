@@ -1,4 +1,5 @@
 import pandas as pd
+import pyarrow.dataset as ds
 import plotly.express as px
 import plot as wsba_plt
 import numpy as np
@@ -92,7 +93,7 @@ app_ui = ui.page_fluid(
             color: white;
             background-color: #09090b;
         }
-    """
+        """
     ),
     output_widget("line_combos"),
     ui.output_data_frame("with_out")
@@ -149,10 +150,13 @@ def server(input, output, session):
         queries.set(query)
 
         #Load appropriate dataframe
-        df = pd.read_parquet(f'https://weakside-breakout.s3.us-east-2.amazonaws.com/pbp/parquet/nhl_pbp_{season}.parquet')
+        dataset = ds.dataset(f's3://weakside-breakout/pbp/parquet/nhl_pbp_{season}.parquet', format='parquet')
+        filter_expr = ((ds.field('away_team_abbr') == query['team'][0]) | (ds.field('home_team_abbr') == query['team'][0])) & ((ds.field('season_type') == int(query['season_type'][0])))
+
+        table = dataset.to_table(columns=col,filter=filter_expr)
+        df = table.to_pandas()
     
         #Prepare dataframe for plotting based on URL parameters
-        df = df.loc[(df['season_type'].astype(str).isin(query['season_type']))][col]
         team_data.set(df[(df['away_team_abbr']==query['team'][0]) | (df['home_team_abbr']==query['team'][0])])
         player_data.set(wsba_plt.player_events(df,query['skaters']))
 
