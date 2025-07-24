@@ -246,7 +246,7 @@ def server(input, output, session):
         if df.empty:
             return wsba_plt.wsba_rink()
         else:
-            df['game_title'] = df['away_team_abbr'] + '@' + df['home_team_abbr'] + ' - ' + df['game_date']
+            df['game_title'] = df['away_team_abbr'] + ' @ ' + df['home_team_abbr'] + ' - ' + df['game_date']
             game_title = df['game_title'].to_list()[0]
             print(game_title)
             colors = wsba_plt.colors(df)
